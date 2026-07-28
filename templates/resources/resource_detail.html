@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}{{ resource.name }} · GymFlow{% endblock %}
+{% block content %}
+<a class="back-link" href="{% url 'resources:list' %}">← Back to resources</a>
+<section class="detail-hero">
+    <div><span class="eyebrow">{{ resource.area }} · {{ resource.get_resource_type_display }}</span><h1>{{ resource.name }}</h1><p>{{ resource.description|default:"Reserve this resource for your next workout." }}</p></div>
+    <div class="detail-stats"><div><strong>{{ resource.capacity }}</strong><span>Capacity</span></div><div><strong>{{ resource.reset_minutes }}</strong><span>Reset minutes</span></div></div>
+</section>
+<section class="info-panel">
+    <div><h2>Reservation rules</h2><p>The Coordinator prevents overlapping bookings and keeps a {{ resource.reset_minutes }}-minute reset period between sessions.</p></div>
+    <a class="button primary" href="{% url 'reservations:create' resource.pk %}">Reserve this resource</a>
+</section>
+{% endblock %}

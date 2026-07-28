@@ -1,0 +1,89 @@
+@startuml GymFlowClassDiagram
+skinparam classAttributeIconSize 0
+hide empty methods
+
+class User {
+  username
+  role
+  no_show_count
+  cancellation_count
+  restricted_until
+  is_booking_restricted
+}
+
+class Area {
+  name
+  max_capacity
+  current_occupancy
+  is_at_capacity
+}
+
+class Resource {
+  name
+  resource_type
+  capacity
+  reset_minutes
+  is_active
+  is_under_maintenance
+}
+
+class MaintenanceWindow {
+  start_time
+  end_time
+  reason
+  overlaps()
+}
+
+class Reservation {
+  start_time
+  end_time
+  status
+  priority
+  check_in_at
+}
+
+class PriorityQueueEntry {
+  priority
+  created_at
+}
+
+class Coordinator {
+  request_reservation()
+  cancel()
+  promote_next()
+  check_in()
+  mark_no_show()
+  complete()
+}
+
+Area "1" -- "*" Resource
+Resource "1" -- "*" MaintenanceWindow
+User "1" -- "*" Reservation
+Resource "1" -- "*" Reservation
+Reservation "1" -- "0..1" PriorityQueueEntry
+Coordinator ..> Reservation
+Coordinator ..> PriorityQueueEntry
+Coordinator ..> Resource
+@enduml
+
+@startuml GymFlowUseCases
+left to right direction
+actor Member
+actor Staff
+rectangle GymFlow {
+  usecase "Reserve Resource" as UC1
+  usecase "Enqueue Request" as UC2
+  usecase "Check In" as UC3
+  usecase "Cancel Reservation" as UC4
+  usecase "Complete Reservation" as UC5
+  usecase "Track No-Show" as UC6
+  usecase "Staff Resource Management" as UC7
+}
+Member --> UC1
+Member --> UC3
+Member --> UC4
+UC1 .> UC2 : extends when unavailable
+Staff --> UC5
+Staff --> UC6
+Staff --> UC7
+@enduml

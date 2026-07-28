@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Log in · GymFlow{% endblock %}
+{% block content %}
+<section class="auth-card">
+    <span class="eyebrow">Welcome back</span>
+    <h1>Log in to GymFlow</h1>
+    <p>Manage bookings, waitlists, and check-ins.</p>
+    <form method="post" class="form-stack">{% csrf_token %}{{ form.as_p }}<button class="button primary">Log in</button></form>
+    <p class="form-note">New member? <a href="{% url 'accounts:register' %}">Create an account</a></p>
+</section>
+{% endblock %}

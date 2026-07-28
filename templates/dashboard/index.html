@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Staff dashboard · GymFlow{% endblock %}
+{% block content %}
+<section class="page-heading"><div><span class="eyebrow">Staff operations</span><h1>Coordinator dashboard</h1><p>Live reservation, resource, and member overview.</p></div><div class="actions"><a class="button secondary" href="{% url 'dashboard:maintenance_create' %}">Maintenance</a><a class="button primary" href="{% url 'dashboard:resource_create' %}">Add resource</a></div></section>
+<div class="kpi-grid">
+    <article class="kpi"><span>Active resources</span><strong>{{ resource_count }}</strong><small>Ready for booking</small></article>
+    <article class="kpi"><span>Checked in</span><strong>{{ active_count }}</strong><small>Current sessions</small></article>
+    <article class="kpi"><span>Upcoming</span><strong>{{ upcoming_count }}</strong><small>Confirmed bookings</small></article>
+    <article class="kpi"><span>Waitlisted</span><strong>{{ queue_count }}</strong><small>Priority requests</small></article>
+</div>
+<div class="dashboard-grid">
+<section class="table-card"><div class="section-title"><div><h2>Upcoming reservations</h2><p>Next confirmed and queued sessions</p></div></div><div class="table-scroll"><table><thead><tr><th>Member</th><th>Resource</th><th>Start</th><th>Status</th></tr></thead><tbody>{% for item in upcoming %}<tr><td>{{ item.user.get_full_name|default:item.user.username }}</td><td>{{ item.resource }}</td><td>{{ item.start_time|date:"M j, g:i A" }}</td><td><span class="badge status-{{ item.status }}">{{ item.get_status_display }}</span></td></tr>{% empty %}<tr><td colspan="4">No upcoming bookings.</td></tr>{% endfor %}</tbody></table></div></section>
+<aside class="side-card"><div class="section-title"><div><h2>Area capacity</h2><p>Current floor occupancy</p></div><a href="{% url 'dashboard:area_create' %}">Manage</a></div>{% for area in areas %}<div class="capacity-row"><div><strong>{{ area.name }}</strong><span>{{ area.current_occupancy }}/{{ area.max_capacity }} members</span></div><progress value="{{ area.current_occupancy }}" max="{{ area.max_capacity }}"></progress></div>{% empty %}<p>No areas configured.</p>{% endfor %}</aside>
+</div>
+<section class="table-card members"><div class="section-title"><div><h2>Member activity</h2><p>Cancellation and no-show history</p></div></div><div class="table-scroll"><table><thead><tr><th>Member</th><th>Cancellations</th><th>No-shows</th><th>Booking access</th></tr></thead><tbody>{% for member in members %}<tr><td>{{ member.get_full_name|default:member.username }}</td><td>{{ member.cancellation_count }}</td><td>{{ member.no_show_count }}</td><td>{% if member.is_booking_restricted %}<span class="badge danger">Restricted</span>{% else %}<span class="badge available">Active</span>{% endif %}</td></tr>{% empty %}<tr><td colspan="4">No member activity.</td></tr>{% endfor %}</tbody></table></div></section>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}My reservations · GymFlow{% endblock %}
+{% block content %}
+<section class="page-heading"><div><span class="eyebrow">Your schedule</span><h1>My reservations</h1><p>Check in, review queue status, or cancel an upcoming booking.</p></div><a class="button primary" href="{% url 'resources:list' %}">New reservation</a></section>
+<div class="table-card">
+<div class="table-scroll"><table>
+    <thead><tr><th>Resource</th><th>Date and time</th><th>Status</th><th>Priority</th><th>Action</th></tr></thead>
+    <tbody>
+    {% for reservation in reservations %}
+        <tr>
+            <td><strong>{{ reservation.resource.name }}</strong><small>{{ reservation.resource.area }}</small></td>
+            <td>{{ reservation.start_time|date:"M j, Y" }}<small>{{ reservation.start_time|time:"g:i A" }}–{{ reservation.end_time|time:"g:i A" }}</small></td>
+            <td><span class="badge status-{{ reservation.status }}">{{ reservation.get_status_display }}</span>{% if reservation.queue_position %}<small>Position #{{ reservation.queue_position }}</small>{% endif %}</td>
+            <td>{{ reservation.get_priority_display }}</td>
+            <td><div class="actions">{% if reservation.status == "pending" %}<form method="post" action="{% url 'reservations:check_in' reservation.pk %}">{% csrf_token %}<button class="button small primary">Check in</button></form>{% endif %}{% if reservation.status == "pending" or reservation.status == "queued" %}<form method="post" action="{% url 'reservations:cancel' reservation.pk %}">{% csrf_token %}<button class="button small ghost">Cancel</button></form>{% endif %}</div></td>
+        </tr>
+    {% empty %}<tr><td colspan="5"><div class="empty-state"><h2>No reservations yet</h2><p>Browse the gym to book your first resource.</p></div></td></tr>{% endfor %}
+    </tbody>
+</table></div></div>
+{% endblock %}

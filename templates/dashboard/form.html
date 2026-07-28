@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} · GymFlow{% endblock %}
+{% block content %}
+<a class="back-link" href="{% url 'dashboard:index' %}">← Back to dashboard</a>
+<section class="form-card"><span class="eyebrow">Staff control</span><h1>{{ title }}</h1><form method="post" class="form-stack">{% csrf_token %}{{ form.as_p }}<button class="button primary">Save changes</button></form></section>
+{% endblock %}

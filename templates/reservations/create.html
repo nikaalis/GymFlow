@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Reserve {{ resource.name }} · GymFlow{% endblock %}
+{% block content %}
+<a class="back-link" href="{% url 'resources:detail' resource.pk %}">← Back to {{ resource.name }}</a>
+<section class="form-card">
+    <span class="eyebrow">New reservation</span><h1>Choose your time</h1>
+    <div class="selected-resource"><strong>{{ resource.name }}</strong><span>{{ resource.area }} · {{ resource.reset_minutes }}-minute reset</span></div>
+    <form method="post" class="form-stack">{% csrf_token %}{{ form.as_p }}<button class="button primary">Request reservation</button></form>
+    <p class="form-note">If the time is unavailable, the Coordinator automatically adds you to the priority waitlist.</p>
+</section>
+{% endblock %}

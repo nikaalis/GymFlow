@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Browse · GymFlow{% endblock %}
+{% block content %}
+<section class="page-heading">
+    <div><span class="eyebrow">University recreation center</span><h1>Find your next workout</h1><p>Reserve equipment, courts, and rooms without waiting around.</p></div>
+    {% if user.is_authenticated %}<a class="button secondary" href="{% url 'reservations:mine' %}">View my bookings</a>{% endif %}
+</section>
+<form class="filter-bar" method="get">
+    <input type="search" name="q" value="{{ request.GET.q }}" placeholder="Search equipment or spaces">
+    <select name="area"><option value="">All areas</option>{% for area in areas %}<option value="{{ area.pk }}">{{ area.name }}</option>{% endfor %}</select>
+    <select name="type"><option value="">All resource types</option>{% for value,label in types %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select>
+    <button class="button primary">Filter</button>
+</form>
+<div class="resource-grid">
+{% for resource in resources %}
+    <article class="resource-card">
+        <div class="card-top"><span class="resource-icon">{{ resource.name|first }}</span><span class="badge {% if resource.is_under_maintenance %}danger{% else %}available{% endif %}">{% if resource.is_under_maintenance %}Maintenance{% else %}Available{% endif %}</span></div>
+        <p class="muted">{{ resource.area }} · {{ resource.get_resource_type_display }}</p>
+        <h2>{{ resource.name }}</h2>
+        <p>{{ resource.description|default:"Ready for your next training session."|truncatewords:18 }}</p>
+        <div class="resource-meta"><span>Capacity <strong>{{ resource.capacity }}</strong></span><span>Reset <strong>{{ resource.reset_minutes }} min</strong></span></div>
+        <a class="button primary full" href="{% if user.is_authenticated %}{% url 'resources:detail' resource.pk %}{% else %}{% url 'accounts:login' %}{% endif %}">View times</a>
+    </article>
+{% empty %}
+    <div class="empty-state"><h2>No resources found</h2><p>Try removing one of your filters.</p></div>
+{% endfor %}
+</div>
+{% endblock %}
