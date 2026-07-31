@@ -65,6 +65,14 @@ Availability checks consider resource status, area capacity, maintenance overlap
 - Django test framework
 - Git and GitHub
 
+## Project Documentation
+
+- [Design specification and domain rules](prompts/design_specification.md)
+- [Agent prompt and context record](prompts/agent_context.md)
+- [Architecture, use-case, class, and state diagrams](docs/diagrams.md)
+- [PlantUML source](gymflow_uml.puml)
+- [Exported UML diagrams](UMLdiagrams/gymflow_uml)
+
 ## Installation and Setup
 
 Clone the repository and enter the project directory:
