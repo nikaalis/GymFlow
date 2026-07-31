@@ -92,7 +92,19 @@ python3 -m venv venv
 source venv/bin/activate
 ```
 
-For a non-development environment, copy `.env.example` to `.env`, set a unique `DJANGO_SECRET_KEY`, and load it into your shell or deployment environment.
+Copy `.env.example` to `.env`, replace `DJANGO_SECRET_KEY`, and load the
+values into your shell. Django does not read the file automatically; deployment
+platforms should set these values in their environment or secret manager.
+
+The available settings are:
+
+- `DJANGO_SECRET_KEY`: required; use a long, unique, unpredictable value.
+- `DJANGO_DEBUG`: optional; defaults to `False`. Use `True` only locally.
+- `DJANGO_ALLOWED_HOSTS`: comma-separated hostnames without schemes or paths.
+- `DJANGO_CSRF_TRUSTED_ORIGINS`: comma-separated origins including `https://`.
+
+For local development, the values in `.env.example` allow the website to run
+at `http://127.0.0.1:8000/`.
 
 ## Installing Dependencies
 
@@ -134,6 +146,47 @@ python manage.py test apps.reservations
 python manage.py test apps.resources
 python manage.py test apps.dashboard
 ```
+
+## Production Deployment
+
+GymFlow is a server-rendered Django website. Gunicorn runs the WSGI application,
+and WhiteNoise serves versioned, compressed static assets after Django collects
+them.
+
+Configure the deployment environment with production values:
+
+```text
+DJANGO_SECRET_KEY=<long-random-production-secret>
+DJANGO_DEBUG=False
+DJANGO_ALLOWED_HOSTS=gymflow.example.com,www.gymflow.example.com
+DJANGO_CSRF_TRUSTED_ORIGINS=https://gymflow.example.com,https://www.gymflow.example.com
+```
+
+Do not add paths to `DJANGO_ALLOWED_HOSTS`. Each CSRF trusted origin must include
+its scheme, and production origins should use `https://`. When
+`DJANGO_DEBUG=False`, Django marks session and CSRF cookies as secure, so the
+production website must be served over HTTPS.
+
+Install dependencies and prepare the website:
+
+```bash
+pip install -r requirements.txt
+python manage.py check --deploy
+python manage.py migrate
+python manage.py collectstatic --noinput
+```
+
+Start the production web process:
+
+```bash
+gunicorn config.wsgi:application --bind 0.0.0.0:${PORT:-8000}
+```
+
+The included `Procfile` provides the same WSGI entry point for platforms that
+support process files. Run migrations during each release, and run
+`collectstatic` whenever static assets change. SQLite remains the default
+database, so a deployment must use persistent storage; use a managed production
+database before running multiple website instances.
 
 ## Challenges
 
